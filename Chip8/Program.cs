@@ -10,7 +10,7 @@ namespace Chip8
             // Virtual CHIP-8 CPU
             var cpu = new CPU();
             
-            using (var rom = File.OpenRead("roms/IBM Logo.ch8"))
+            using (var rom = File.OpenRead("roms/sample.ch8"))
             {
                 Console.WriteLine($"File is {rom.Length} bytes long");
 

@@ -72,8 +72,9 @@ namespace Chip8
                     break;
                 // Sets the value of VX equal to VY
                 case 0x8000:
+                {
                     var vx = (opcode & 0x0F00) >> 8;
-                    var vy = (opcode & 0x00F0) >> 8;
+                    var vy = (opcode & 0x00F0) >> 4;
                     switch (opcode & 0x000F)
                     {
                         // Assignment
@@ -102,9 +103,34 @@ namespace Chip8
                             V[15] = (byte) (V[vx] > V[vy] ? 1 : 0);
                             V[vx] = (byte) ((V[vx] - V[vy]) & 0x00FF);
                             break;
+                        // BITSHIFT RIGHT BY 1
+                        case 6:
+                            V[15] = (byte) (V[vx] & 0x0001);
+                            V[vx] = (byte) (V[vx] >> 1);
+                            break;
+                        // SET VX TO VY - VX. VF is set to 0 when there's a borrow, and 1 when there isn't
+                        case 7:
+                            V[15] = (byte) (V[vy] > V[vx] ? 1 : 0);
+                            V[vx] = (byte) ((V[vy] - V[vx]) & 0x00FF);
+                            break;
+                        // BITSHIFT LEFT BY 1
+                        case 14:
+                            V[15] = (byte) ((V[vx] & 0x80) == 0x80 ? 1 : 0);
+                            V[vx] = (byte) (V[vx] << 1);
+                            break;
                         default:
                             throw new NotSupportedException($"Unsupported Opcode: {opcode:X4}.");
                     }
+                }
+                    break;
+                // Skip the next instruction if VX doesn't equal VY
+                case 0x9000:
+                {
+                    var vx = (opcode & 0x0F00) >> 8;
+                    var vy = (opcode & 0x00F0) >> 4;
+                    if (vx != vy)
+                        I += 2;
+                }
                     break;
                 default:
                     throw new NotSupportedException($"Unsupported Opcode: {opcode:X4}.");
