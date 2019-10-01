@@ -5,16 +5,17 @@ namespace Chip8
 {
     public class CPU
     {
-        private byte[] Memory = new byte[4096];
-        private byte[] V = new byte[16];    // CPU registers
-        private ushort I = 0;
+        public byte[] Memory = new byte[4096];
+        public ushort PC = 0x200;
+        public byte[] V = new byte[16];    // CPU registers
+        public ushort I = 0;
         //public ushort[] Stack = new ushort[24];
-        private Stack<ushort> Stack = new Stack<ushort>(24);
-        private byte DelayTimer;
-        private byte SoundTimer;
-        private byte Keyboard;
+        public Stack<ushort> Stack = new Stack<ushort>(24);
+        public byte DelayTimer;
+        public byte SoundTimer;
+        public byte Keyboard;
         
-        private byte[] Display = new byte[64 * 32];
+        public byte[] Display = new byte[64 * 32];
 
         public void ExecuteOpcode(ushort opcode)
         {
@@ -35,7 +36,7 @@ namespace Chip8
                     // Unknown opcode
                     else
                     {
-                        throw new NotSupportedException($"Unsupported Opcode: {opcode:X4}.");
+                        throw new UnsupportedOpcodeException(opcode);
                     }
                     break;
                 // Jump to address
@@ -119,7 +120,7 @@ namespace Chip8
                             V[vx] = (byte) (V[vx] << 1);
                             break;
                         default:
-                            throw new NotSupportedException($"Unsupported Opcode: {opcode:X4}.");
+                            throw new UnsupportedOpcodeException(opcode);
                     }
                 }
                     break;
@@ -133,7 +134,7 @@ namespace Chip8
                 }
                     break;
                 default:
-                    throw new NotSupportedException($"Unsupported Opcode: {opcode:X4}.");
+                    throw new UnsupportedOpcodeException(opcode);
             }
         }
     }
