@@ -17,6 +17,10 @@ namespace Chip8
         
         public byte[] Display = new byte[64 * 32];
 
+        #region Private Fields
+        private Random m_rand = new Random();
+        #endregion
+
         public void ExecuteOpcode(ushort opcode)
         {
             var nibble = (ushort)(opcode & 0xF000);
@@ -132,6 +136,24 @@ namespace Chip8
                     if (vx != vy)
                         I += 2;
                 }
+                    break;
+                // Set I to the address of NNN
+                case 0xA000:
+                    I = (ushort)(opcode & 0x0FFF);
+                    break;
+                // Jumps to the address of NNN plus V0
+                case 0xB000:
+                    PC = (ushort)((opcode & 0x0FFF) + V[0]);
+                    break;
+                // Sets VX to the result of a bitwise and operation on a random number (Typically: 0 to 255) and NN. 
+                case 0xC000:
+                    V[(opcode & 0x0F00) >> 8] = (byte)(m_rand.Next() & (opcode & 0x0FF));
+                    break;
+                case 0xD000:
+                    var x = V[(opcode & 0xF00) >> 8];
+                    var y = V[(opcode & 0x0F0) >> 4];
+                    var n = opcode & 0x00F;
+                    // CONTINUE HERE...
                     break;
                 default:
                     throw new UnsupportedOpcodeException(opcode);
